@@ -74,13 +74,12 @@ CREATE TABLE orders (
 );
 
 CREATE TABLE order_details (
-    detail_id BIGINT NOT NULL AUTO_INCREMENT,
     order_id INT NOT NULL,
     ref VARCHAR(50) NOT NULL,
     price DOUBLE,
     discount DOUBLE,
     amount INT,
-    PRIMARY KEY (detail_id),
+    PRIMARY KEY (order_id, ref),
     CONSTRAINT fk_order_details_orders FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
 );
 

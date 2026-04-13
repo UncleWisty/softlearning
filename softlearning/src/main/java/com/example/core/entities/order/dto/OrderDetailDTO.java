@@ -5,9 +5,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -15,23 +14,29 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "order_details")
+@IdClass(OrderDetailId.class)
 public class OrderDetailDTO {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "detail_id")
-    private Long detailId;
+    @Column(name = "order_id")
+    private int orderID;
+
     @Column(name = "ref")
+    @Id
     private String ref;
+
     @Column(name = "price")
     private double price;
+
     @Column(name = "discount")
     private double discount;
+
     @Column(name = "amount")
     private int amount;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false, insertable = false, updatable = false)
     private OrderDTO order;
 
     public OrderDetailDTO() {
@@ -42,15 +47,15 @@ public class OrderDetailDTO {
         this.price = price;
         this.discount = discount;
         this.amount = amount;
-        this.order = order;
+        this.setOrder(order);
     }
 
-    public Long getDetailId() {
-        return detailId;
+    public int getOrderID() {
+        return orderID;
     }
 
-    public void setDetailId(Long detailId) {
-        this.detailId = detailId;
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
     }
 
     public String getRef() {
@@ -91,5 +96,8 @@ public class OrderDetailDTO {
 
     public void setOrder(OrderDTO order) {
         this.order = order;
+        if (order != null) {
+            this.orderID = order.getOrderID();
+        }
     }
 }

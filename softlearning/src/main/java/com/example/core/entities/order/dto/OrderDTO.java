@@ -220,6 +220,7 @@ public class OrderDTO {
 
         for (OrderDetailDTO detail : shopCart) {
             detail.setOrder(this);
+            detail.setOrderID(this.orderID);
             this.shopCart.add(detail);
         }
     }
