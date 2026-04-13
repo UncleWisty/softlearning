@@ -53,6 +53,37 @@ create table vehicles(
     revision VARCHAR(255)
 );
 
+CREATE TABLE orders (
+    order_id INT NOT NULL,
+    operation_ref INT NOT NULL,
+    client_id INT NOT NULL,
+    description TEXT,
+    start_date VARCHAR(255),
+    finish_date VARCHAR(255),
+    receiver_address VARCHAR(255),
+    receiver_person VARCHAR(255),
+    payment_date VARCHAR(255),
+    delivery_date VARCHAR(255),
+    phone_contacts VARCHAR(255),
+    package_weight DOUBLE,
+    package_height DOUBLE,
+    package_width DOUBLE,
+    package_depth DOUBLE,
+    status VARCHAR(50),
+    PRIMARY KEY (order_id)
+);
+
+CREATE TABLE order_details (
+    detail_id BIGINT NOT NULL AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    ref VARCHAR(50) NOT NULL,
+    price DOUBLE,
+    discount DOUBLE,
+    amount INT,
+    PRIMARY KEY (detail_id),
+    CONSTRAINT fk_order_details_orders FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
+);
+
 CREATE USER 'lorien'@'%' IDENTIFIED BY 'lorien';
 GRANT ALL PRIVILEGES ON softlearning.* TO 'lorien'@'%';
 FLUSH PRIVILEGES;

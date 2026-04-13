@@ -1,9 +1,8 @@
 package com.example.core.entities.order.mapper;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.example.core.entities.order.dto.OrderDTO;
 import com.example.core.entities.order.dto.OrderDetailDTO;
@@ -19,54 +18,99 @@ public class OrderMapper {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm:ss");
 
-    public static OrderDTO OrderToDTO(Order o) throws BuildException {
-        List<OrderDetailDTO> details = o.getShopCart().stream()
-                .map(d -> new OrderDetailDTO(d.getRef(), d.getPrice(), d.getDiscount(), d.getAmount(), null))
-                .collect(Collectors.toList());
+    public static OrderDTO OrderToDTO(Order order) throws BuildException {
+        List<OrderDetailDTO> details = new ArrayList<>();
+        String finishDate = null;
+
         try {
-            LocalDateTime paymentDate = o.getPaymentDate() != null ? Check.convertStringToDateTime(o.getPaymentDate(), FORMATTER) : null;
-            LocalDateTime deliveryDate = o.getDeliveryDate() != null ? Check.convertStringToDateTime(o.getDeliveryDate(), FORMATTER) : null;
-            return new OrderDTO(
-                    o.getOrderID(),
-                    o.getClientID(),
-                    o.getRecieverAddress(),
-                    o.getRecieverPerson(),
-                    paymentDate,
-                    deliveryDate,
-                    String.join(",", o.getPhoneContact()),
-                    o.getOrderPackage() != null ? o.getOrderPackage().getWeight() : 0,
-                    o.getOrderPackage() != null ? o.getOrderPackage().getHeight() : 0,
-                    o.getOrderPackage() != null ? o.getOrderPackage().getWidth() : 0,
-                    o.getOrderPackage() != null ? o.getOrderPackage().getDepth() : 0,
-                    o.getStatus(),
-                    details
-            );
+            finishDate = order.getFinishDate() != null ? Check.convertDateTimeToString(order.getFinishDate(), FORMATTER) : null;
         } catch (GeneralDateTimeException e) {
-            throw new BuildException("Invalid date format: " + e.getMessage());
+            throw new BuildException("Invalid finish date: " + e.getMessage());
         }
+
+        OrderDTO dto = new OrderDTO(
+                order.getOrderID(),
+                order.getRef() > 0 ? order.getRef() : order.getOrderID(),
+                order.getClientID(),
+                order.getDescription(),
+                order.getStartDateSafe(),
+                finishDate,
+                order.getRecieverAddress(),
+                order.getRecieverPerson(),
+                order.getPaymentDate(),
+                order.getDeliveryDate(),
+                order.getPhoneContact(),
+                order.getOrderPackage() != null ? order.getOrderPackage().getWeight() : 0,
+                order.getOrderPackage() != null ? order.getOrderPackage().getHeight() : 0,
+                order.getOrderPackage() != null ? order.getOrderPackage().getWidth() : 0,
+                order.getOrderPackage() != null ? order.getOrderPackage().getDepth() : 0,
+                order.getStatus(),
+                details
+        );
+
+        for (OrderDetail detail : order.getShopCart()) {
+            details.add(new OrderDetailDTO(detail.getRef(), detail.getPrice(), detail.getDiscount(), detail.getAmount(), dto));
+        }
+
+        dto.setShopCart(details);
+        return dto;
     }
 
     public static Order DTOtoOrder(OrderDTO dto) throws BuildException {
-        Order o = new Order(dto.getOrderID(), dto.getClientID());
-        o.setRecieverAddress(dto.getReceiverAddress());
-        o.setRecieverPerson(dto.getReceiverPerson());
+        Order order = new Order(dto.getOrderID(), dto.getClientID());
+
+        if (dto.getOperationRef() > 0) {
+            order.setRef(dto.getOperationRef());
+        } else {
+            order.setRef(dto.getOrderID());
+        }
+        order.setDescription(dto.getDescription());
 
         try {
-
-            o.setPaymentDate(Check.convertDateTimeToString(dto.getPaymentDate(), FORMATTER));
-            o.setStatus(OrderStatus.FORTHCOMING);
-            o.setDeliveryDate(Check.convertDateTimeToString(dto.getDeliveryDate(), FORMATTER));
+            if (hasText(dto.getStartDate())) {
+                order.setStartDate(dto.getStartDate());
+            }
+            if (hasText(dto.getReceiverAddress())) {
+                order.setRecieverAddress(dto.getReceiverAddress());
+            }
+            if (hasText(dto.getReceiverPerson())) {
+                order.setRecieverPerson(dto.getReceiverPerson());
+            }
+            if (hasText(dto.getPhoneContacts())) {
+                order.setPhoneContacts(dto.getPhoneContacts());
+            }
+            if (dto.getPackageWeight() > 0) {
+                order.setDimensions(dto.getPackageWeight() + "," + dto.getPackageHeight() + "," + dto.getPackageWidth() + "," + dto.getPackageDepth());
+            }
+            if (hasText(dto.getPaymentDate())) {
+                order.setPaymentDate(dto.getPaymentDate());
+            }
+            if (hasText(dto.getDeliveryDate())) {
+                if (OrderStatus.CONFIRMED.name().equals(order.getStatus())) {
+                    order.setStatus(OrderStatus.FORTHCOMING);
+                }
+                order.setDeliveryDate(dto.getDeliveryDate());
+            }
+            if (hasText(dto.getFinishDate())) {
+                order.setFinishDate(dto.getFinishDate());
+            }
+            if (hasText(dto.getStatus()) && !dto.getStatus().equals(order.getStatus())) {
+                order.setStatus(OrderStatus.valueOf(dto.getStatus()));
+            }
         } catch (GeneralDateTimeException | ServiceException e) {
             throw new BuildException("Invalid date format: " + e.getMessage());
         }
-        o.setPhoneContacts(dto.getPhoneContacts());
-        if (dto.getPackageWeight() > 0) {
-            o.setDimensions(dto.getPackageWeight() + "," + dto.getPackageHeight() + "," + dto.getPackageWidth() + "," + dto.getPackageDepth());
+
+        if (dto.getShopCart() != null) {
+            for (OrderDetailDTO detail : dto.getShopCart()) {
+                order.getShopCart().add(new OrderDetail(detail.getRef(), detail.getPrice(), detail.getDiscount(), detail.getAmount()));
+            }
         }
-        o.setStatus(OrderStatus.valueOf(dto.getStatus()));
-        for (OrderDetailDTO d : dto.getShopCart()) {
-            o.getShopCart().add(new OrderDetail(d.getRef(), d.getPrice(), d.getDiscount(), d.getAmount()));
-        }
-        return o;
+
+        return order;
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
     }
 }

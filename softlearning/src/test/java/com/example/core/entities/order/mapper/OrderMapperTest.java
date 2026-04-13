@@ -1,6 +1,5 @@
 package com.example.core.entities.order.mapper;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,12 +34,15 @@ public class OrderMapperTest {
     @Test
     void testDTOtoOrder() throws BuildException {
         OrderDetailDTO detailDTO = new OrderDetailDTO("ref1", 10.0, 2.0, 5, null);
-        OrderDTO dto = new OrderDTO(1, 100, "123 Main St", "John Doe", LocalDateTime.now(), LocalDateTime.now().plusDays(1), "123-456-7890", 1.0, 2.0, 3.0, 4.0, OrderStatus.CREATED.name(), Arrays.asList(detailDTO));
+        OrderDTO dto = new OrderDTO(1, 1, 100, "Pedido de prueba con descripcion valida", "01/01/2026-10:00:00", null,
+                "123 Main St", "John Doe", null, null, "123-456-7890", 1.0, 2.0, 3.0, 4.0,
+                OrderStatus.CREATED.name(), Arrays.asList(detailDTO));
 
         Order order = OrderMapper.DTOtoOrder(dto);
 
         assertNotNull(order);
         assertEquals(1, order.numDetails());
         assertEquals("ref1,10.0,2.0,5", order.getDetail(0));
+        assertEquals("Pedido de prueba con descripcion valida", order.getDescription());
     }
 }

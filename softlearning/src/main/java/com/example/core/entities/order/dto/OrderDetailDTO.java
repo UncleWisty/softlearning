@@ -1,7 +1,12 @@
 package com.example.core.entities.order.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,6 +18,9 @@ import jakarta.persistence.Table;
 public class OrderDetailDTO {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "detail_id")
+    private Long detailId;
     @Column(name = "ref")
     private String ref;
     @Column(name = "price")
@@ -21,8 +29,9 @@ public class OrderDetailDTO {
     private double discount;
     @Column(name = "amount")
     private int amount;
-    @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
     private OrderDTO order;
 
     public OrderDetailDTO() {
@@ -36,7 +45,14 @@ public class OrderDetailDTO {
         this.order = order;
     }
 
-    // Getters and setters
+    public Long getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(Long detailId) {
+        this.detailId = detailId;
+    }
+
     public String getRef() {
         return ref;
     }

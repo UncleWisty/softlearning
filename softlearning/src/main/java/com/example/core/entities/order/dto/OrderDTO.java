@@ -1,11 +1,14 @@
 package com.example.core.entities.order.dto;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -17,18 +20,26 @@ public class OrderDTO {
     @Id
     @Column(name = "order_id")
     private int orderID;
+    @Column(name = "operation_ref")
+    private int operationRef;
     @Column(name = "client_id")
     private int clientID;
+    @Column(name = "description")
+    private String description;
+    @Column(name = "start_date")
+    private String startDate;
+    @Column(name = "finish_date")
+    private String finishDate;
     @Column(name = "receiver_address")
     private String receiverAddress;
     @Column(name = "receiver_person")
     private String receiverPerson;
     @Column(name = "payment_date")
-    private LocalDateTime paymentDate;
+    private String paymentDate;
     @Column(name = "delivery_date")
-    private LocalDateTime deliveryDate;
+    private String deliveryDate;
     @Column(name = "phone_contacts")
-    private String phoneContacts; // Serialized Set<String>
+    private String phoneContacts;
     @Column(name = "package_weight")
     private double packageWeight;
     @Column(name = "package_height")
@@ -39,15 +50,23 @@ public class OrderDTO {
     private double packageDepth;
     @Column(name = "status")
     private String status;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
-    private List<OrderDetailDTO> shopCart;
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<OrderDetailDTO> shopCart = new ArrayList<>();
 
     public OrderDTO() {
     }
 
-    public OrderDTO(int orderID, int clientID, String receiverAddress, String receiverPerson, LocalDateTime paymentDate, LocalDateTime deliveryDate, String phoneContacts, double packageWeight, double packageHeight, double packageWidth, double packageDepth, String status, List<OrderDetailDTO> shopCart) {
+    public OrderDTO(int orderID, int operationRef, int clientID, String description, String startDate,
+            String finishDate, String receiverAddress, String receiverPerson, String paymentDate,
+            String deliveryDate, String phoneContacts, double packageWeight, double packageHeight,
+            double packageWidth, double packageDepth, String status, List<OrderDetailDTO> shopCart) {
         this.orderID = orderID;
+        this.operationRef = operationRef;
         this.clientID = clientID;
+        this.description = description;
+        this.startDate = startDate;
+        this.finishDate = finishDate;
         this.receiverAddress = receiverAddress;
         this.receiverPerson = receiverPerson;
         this.paymentDate = paymentDate;
@@ -58,10 +77,9 @@ public class OrderDTO {
         this.packageWidth = packageWidth;
         this.packageDepth = packageDepth;
         this.status = status;
-        this.shopCart = shopCart;
+        this.setShopCart(shopCart);
     }
 
-    // Getters and setters
     public int getOrderID() {
         return orderID;
     }
@@ -70,12 +88,44 @@ public class OrderDTO {
         this.orderID = orderID;
     }
 
+    public int getOperationRef() {
+        return operationRef;
+    }
+
+    public void setOperationRef(int operationRef) {
+        this.operationRef = operationRef;
+    }
+
     public int getClientID() {
         return clientID;
     }
 
     public void setClientID(int clientID) {
         this.clientID = clientID;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getFinishDate() {
+        return finishDate;
+    }
+
+    public void setFinishDate(String finishDate) {
+        this.finishDate = finishDate;
     }
 
     public String getReceiverAddress() {
@@ -94,19 +144,19 @@ public class OrderDTO {
         this.receiverPerson = receiverPerson;
     }
 
-    public LocalDateTime getPaymentDate() {
+    public String getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDateTime paymentDate) {
+    public void setPaymentDate(String paymentDate) {
         this.paymentDate = paymentDate;
     }
 
-    public LocalDateTime getDeliveryDate() {
+    public String getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(LocalDateTime deliveryDate) {
+    public void setDeliveryDate(String deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 
@@ -163,6 +213,14 @@ public class OrderDTO {
     }
 
     public void setShopCart(List<OrderDetailDTO> shopCart) {
-        this.shopCart = shopCart;
+        this.shopCart = new ArrayList<>();
+        if (shopCart == null) {
+            return;
+        }
+
+        for (OrderDetailDTO detail : shopCart) {
+            detail.setOrder(this);
+            this.shopCart.add(detail);
+        }
     }
 }

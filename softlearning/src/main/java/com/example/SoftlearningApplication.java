@@ -16,18 +16,18 @@ public class SoftlearningApplication {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(SoftlearningApplication.class, args);
 
-        System.out.println("TEST VEHICLES");
-        var repo = context.getBean(VehicleRepository.class);
-        System.out.println("\n *****   AÑADIENDO UN NUEVO VEHICULO  ***** \n");
-        repo.save(new VehicleDTO("1234ABC", "Honda", "Hybrid","Comodo, economico", 700, 5045.9, "02-01-2026, 10:35:00", "14-12-2027, 19:30:00"));
-        System.out.println("\n *****   actualizando vehiculo  ***** \n");
-        repo.save(new VehicleDTO("1234ABC", "Prueba", "Pruebilla","Ancho, prueba", 200, 1273.9, "02-01-2026, 10:35:00", "14-12-2027, 19:30:00"));
-        System.out.println("\n *****   vehiculo:   ***** \n");
-        repo.findByMatricula("1234ABC").ifPresent(System.out::println);
-        // System.out.println("\n *****   eliminando vehiculo  ***** \n");
-        // repo.deleteByMatricula("1234ABC");
-        System.out.println("\n *****   vehiculo:    ***** \n");
-        repo.findByMatricula("1234ABC").ifPresent(System.out::println);
+        // System.out.println("TEST VEHICLES");
+        // var repo = context.getBean(VehicleRepository.class);
+        // System.out.println("\n *****   AÑADIENDO UN NUEVO VEHICULO  ***** \n");
+        // repo.save(new VehicleDTO("1234ABC", "Honda", "Hybrid","Comodo, economico", 700, 5045.9, "02-01-2026, 10:35:00", "14-12-2027, 19:30:00"));
+        // System.out.println("\n *****   actualizando vehiculo  ***** \n");
+        // repo.save(new VehicleDTO("1234ABC", "Prueba", "Pruebilla","Ancho, prueba", 200, 1273.9, "02-01-2026, 10:35:00", "14-12-2027, 19:30:00"));
+        // System.out.println("\n *****   vehiculo:   ***** \n");
+        // repo.findByMatricula("1234ABC").ifPresent(System.out::println);
+        // // System.out.println("\n *****   eliminando vehiculo  ***** \n");
+        // // repo.deleteByMatricula("1234ABC");
+        // System.out.println("\n *****   vehiculo:    ***** \n");
+        // repo.findByMatricula("1234ABC").ifPresent(System.out::println);
         
 
 
