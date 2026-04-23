@@ -21,6 +21,7 @@ public class Book extends Product implements Storable, Marketable {
             double depth) throws BuildException {
         Book b = new Book();
         String message = b.bookDataValidation(idProduct, name, description, price, stock, isbn, title, author, publisher, publishYear, weight, height, width, depth);
+        b.setAvailable(isAvailable);
         if (!message.isEmpty()) {
             throw new BuildException(message);
         }
@@ -65,13 +66,8 @@ public class Book extends Product implements Storable, Marketable {
     }
 
     public int setIsbn(String isbn) {
-        //tuve q comentar esto pq me daba problemas con react
-        // if (Check.ISBN(isbn)) {
-        //     this.isbn = isbn;
-        //     return 0;
-        // }
-        // return -1;
         if (isbn != null) {
+            this.isbn = isbn;
             return 0;
         }
         return -1;

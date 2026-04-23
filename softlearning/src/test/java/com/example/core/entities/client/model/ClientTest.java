@@ -116,9 +116,6 @@ public class ClientTest {
     @Test
     void testContactData() throws BuildException {
         Client client = Client.getInstance("12345678", "test@example.com", "123456789", "Test Address 123", "Test Name", 1001, "01-01-2020, 12:00:00");
-        // Assuming getContactData() returns something like "email|phone|adress|idClient"
-        // But since it's not defined, this might fail; adjust based on actual implementation
-        // For now, assume it works
         String contact = client.contactData();
         assertTrue(contact.contains("1001"));
     }

@@ -70,7 +70,7 @@ public class BookTest {
 
     @Test
     void testGetInstanceInvalidPublisher() {
-        assertThrows(BuildException.class, () -> Book.getInstance("BOOK001", "Book Name", "Description", 29.99, 10, true, "978-3-16-148410-0", "Book Title", "Author Name", "Pu", 2020, 1.5, 20.0, 15.0, 2.0));
+        assertThrows(BuildException.class, () -> Book.getInstance("BOOK001", "Book Name", "Description", 29.99, 10, true, "978-3-16-148410-0", "Book Title", "Author Name", "P", 2020, 1.5, 20.0, 15.0, 2.0));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class BookTest {
     @Test
     void testGetVolume() throws BuildException {
         Book book = Book.getInstance("BOOK001", "Book Name", "Description", 29.99, 10, true, "978-3-16-148410-0", "Book Title", "Author Name", "Publisher", 2020, 1.5, 20.0, 15.0, 2.0);
-        assertEquals(60.0, book.getVolume());
+        assertEquals(600.0, book.getVolume());
     }
 
     @Test

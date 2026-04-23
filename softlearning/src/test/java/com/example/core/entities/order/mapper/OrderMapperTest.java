@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.example.core.entities.order.dto.OrderDTO;
@@ -44,5 +45,14 @@ public class OrderMapperTest {
         assertEquals(1, order.numDetails());
         assertEquals("ref1,10.0,2.0,5", order.getDetail(0));
         assertEquals("Pedido de prueba con descripcion valida", order.getDescription());
+    }
+
+    @Test
+    void testDTOtoOrderInvalidStartDate() {
+        OrderDTO dto = new OrderDTO(1, 1, 100, "Pedido de prueba con descripcion valida", "invalid", null,
+                "123 Main St", "John Doe", null, null, "123-456-7890", 1.0, 2.0, 3.0, 4.0,
+                OrderStatus.CREATED.name(), Arrays.asList());
+
+        assertThrows(BuildException.class, () -> OrderMapper.DTOtoOrder(dto));
     }
 }
