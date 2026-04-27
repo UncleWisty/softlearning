@@ -1,5 +1,7 @@
 package com.example.core.entities.book.appservices;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -28,7 +30,19 @@ public class BookServicesTestBase {
 
     protected TestBookServicesImpl bookServices;
 
-    protected static MockedStatic<SerializersCatalog> mockedStatic = mockStatic(SerializersCatalog.class);
+    protected MockedStatic<SerializersCatalog> mockedStatic;
+
+    @BeforeEach
+    protected void setUpMockedStatic() {
+        mockedStatic = mockStatic(SerializersCatalog.class);
+    }
+
+    @AfterEach
+    protected void tearDownMockedStatic() {
+        if (mockedStatic != null) {
+            mockedStatic.close();
+        }
+    }
 
     protected void setUp() {
         bookServices = new TestBookServicesImpl();
