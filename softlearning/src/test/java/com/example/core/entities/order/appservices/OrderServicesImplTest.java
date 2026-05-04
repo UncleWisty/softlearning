@@ -18,6 +18,7 @@ import com.example.core.entities.order.dto.OrderDTO;
 import com.example.core.entities.order.dto.OrderDetailDTO;
 import static com.example.services.serializers.Serializers.JSON_ORDER;
 import static com.example.services.serializers.Serializers.XML_ORDER;
+import static com.example.services.serializers.SerializersCatalog.getInstance;
 import com.example.shared.exceptions.ServiceException;
 
 public class OrderServicesImplTest extends OrderServicesTestBase {
@@ -50,7 +51,7 @@ public class OrderServicesImplTest extends OrderServicesTestBase {
 
     @Test
     void testGetAllOrdersToJson() throws ServiceException {
-        mockedStatic.when(() -> com.example.services.serializers.SerializersCatalog.getInstance(JSON_ORDER)).thenReturn(listSerializer);
+        mockedStatic.when(() -> getInstance(JSON_ORDER)).thenReturn(listSerializer);
         when(orderRepository.findAll()).thenReturn(Arrays.asList(orderDTO));
         when(listSerializer.serialize(Arrays.asList(orderDTO))).thenReturn("[json]");
 
@@ -63,7 +64,7 @@ public class OrderServicesImplTest extends OrderServicesTestBase {
 
     @Test
     void testGetByOrderIDToJson() throws ServiceException {
-        mockedStatic.when(() -> com.example.services.serializers.SerializersCatalog.getInstance(JSON_ORDER)).thenReturn(serializer);
+        mockedStatic.when(() -> getInstance(JSON_ORDER)).thenReturn(serializer);
         orderServices.setParentSerializer(serializer);
         when(orderRepository.findByOrderID(1001)).thenReturn(Optional.of(orderDTO));
         when(serializer.serialize(orderDTO)).thenReturn("{json}");
@@ -77,7 +78,7 @@ public class OrderServicesImplTest extends OrderServicesTestBase {
 
     @Test
     void testGetByOrderIDToXml() throws ServiceException {
-        mockedStatic.when(() -> com.example.services.serializers.SerializersCatalog.getInstance(XML_ORDER)).thenReturn(xmlSerializer);
+        mockedStatic.when(() -> getInstance(XML_ORDER)).thenReturn(xmlSerializer);
         orderServices.setParentSerializer(xmlSerializer);
         when(orderRepository.findByOrderID(1001)).thenReturn(Optional.of(orderDTO));
         when(xmlSerializer.serialize(orderDTO)).thenReturn("<xml/>");
@@ -91,7 +92,7 @@ public class OrderServicesImplTest extends OrderServicesTestBase {
 
     @Test
     void testAddFromJson() throws ServiceException {
-        mockedStatic.when(() -> com.example.services.serializers.SerializersCatalog.getInstance(JSON_ORDER)).thenReturn(serializer);
+        mockedStatic.when(() -> getInstance(JSON_ORDER)).thenReturn(serializer);
         orderServices.setParentSerializer(serializer);
         when(serializer.deserialize("{json}", OrderDTO.class)).thenReturn(orderDTO);
         when(orderRepository.findByOrderID(1001)).thenReturn(Optional.empty());
@@ -106,7 +107,7 @@ public class OrderServicesImplTest extends OrderServicesTestBase {
 
     @Test
     void testAddFromJsonAlreadyExists() throws ServiceException {
-        mockedStatic.when(() -> com.example.services.serializers.SerializersCatalog.getInstance(JSON_ORDER)).thenReturn(serializer);
+        mockedStatic.when(() -> getInstance(JSON_ORDER)).thenReturn(serializer);
         orderServices.setParentSerializer(serializer);
         when(serializer.deserialize("{json}", OrderDTO.class)).thenReturn(orderDTO);
         when(orderRepository.findByOrderID(1001)).thenReturn(Optional.of(orderDTO));
@@ -119,7 +120,7 @@ public class OrderServicesImplTest extends OrderServicesTestBase {
 
     @Test
     void testUpdateOneFromJson() throws ServiceException {
-        mockedStatic.when(() -> com.example.services.serializers.SerializersCatalog.getInstance(JSON_ORDER)).thenReturn(serializer);
+        mockedStatic.when(() -> getInstance(JSON_ORDER)).thenReturn(serializer);
         orderServices.setParentSerializer(serializer);
         when(serializer.deserialize("{json}", OrderDTO.class)).thenReturn(orderDTO);
         when(orderRepository.findByOrderID(1001)).thenReturn(Optional.of(orderDTO));
